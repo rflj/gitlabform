@@ -48,13 +48,15 @@ if [[ -n $existing_gitlab_container_id ]] ; then
   docker rm "$existing_gitlab_container_id"
 fi
 
-mkdir -p $repo_root_directory/config
 if [[ -f Gitlab.gitlab-license ]] ; then
   cecho b "EE license file found - using it..."
+  mkdir -p $repo_root_directory/config
+  rm -rf $repo_root_directory/config/*
   cp Gitlab.gitlab-license $repo_root_directory/config/
+  config_volume="--volume "$repo_root_directory/config:/etc/config""
+else
+  config_volume=""
 fi
-mkdir -p $repo_root_directory/logs
-mkdir -p $repo_root_directory/data
 
 cecho b "Starting GitLab..."
 # run GitLab with root password pre-set and as many unnecessary features disabled to speed up the startup
@@ -65,6 +67,7 @@ container_id=$(docker run --detach \
     --name gitlab \
     --restart always \
     --volume "$repo_root_directory/dev/healthcheck-and-setup.sh:/healthcheck-and-setup.sh" \
+    $config_volume \
     --health-cmd '/healthcheck-and-setup.sh' \
     --health-interval 2s \
     --health-timeout 2m \
