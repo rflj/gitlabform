@@ -48,11 +48,19 @@ if [[ -n $existing_gitlab_container_id ]] ; then
   docker rm "$existing_gitlab_container_id"
 fi
 
-if [[ -f Gitlab.gitlab-license ]] ; then
-  cecho b "EE license file found - using it..."
+if [[ -f Gitlab.gitlab-license || -n "$GITLAB_EE_LICENSE" ]] ; then
+
   mkdir -p $repo_root_directory/config
   rm -rf $repo_root_directory/config/*
-  cp Gitlab.gitlab-license $repo_root_directory/config/
+
+  if [[ -f Gitlab.gitlab-license ]]; then
+    cecho b "EE license file found - using it..."
+    cp Gitlab.gitlab-license $repo_root_directory/config/
+  else
+    cecho b "EE license env variable found - using it..."
+    echo "$GITLAB_EE_LICENSE" | base64 -d > $repo_root_directory/config/Gitlab.gitlab-license
+  fi
+
   config_volume="--volume "$repo_root_directory/config:/etc/config""
 else
   config_volume=""
