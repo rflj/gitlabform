@@ -1,6 +1,5 @@
 from logging import debug
 from cli_ui import debug as verbose
-from cli_ui import warning
 
 from gitlabform.gitlab import GitLab
 from gitlabform.gitlab.core import NotFoundException
@@ -19,25 +18,22 @@ class GroupSecretVariablesProcessor(AbstractProcessor):
 
         for secret_variable in sorted(configuration["group_secret_variables"]):
 
-            if "delete" in configuration["group_secret_variables"][secret_variable]:
+            if configuration["group_secret_variables"][secret_variable].get(
+                "delete", False
+            ):
                 key = configuration["group_secret_variables"][secret_variable]["key"]
-                if configuration["group_secret_variables"][secret_variable]["delete"]:
-                    verbose(f"Deleting {secret_variable}: {key} in group {group}")
-                    try:
-                        self.gitlab.delete_group_secret_variable(group, key)
-                    except:
-                        warning(f"Could not delete variable {key} in group {group}")
-                    continue
-
-            verbose(f"Setting group secret variable: {secret_variable}")
-            try:
-                self.gitlab.put_group_secret_variable(
-                    group, configuration["group_secret_variables"][secret_variable]
-                )
-            except NotFoundException:
-                self.gitlab.post_group_secret_variable(
-                    group, configuration["group_secret_variables"][secret_variable]
-                )
+                verbose(f"Deleting {secret_variable}: {key} in group {group}")
+                self.gitlab.delete_group_secret_variable(group, key)
+            else:
+                verbose(f"Setting group secret variable: {secret_variable}")
+                try:
+                    self.gitlab.put_group_secret_variable(
+                        group, configuration["group_secret_variables"][secret_variable]
+                    )
+                except NotFoundException:
+                    self.gitlab.post_group_secret_variable(
+                        group, configuration["group_secret_variables"][secret_variable]
+                    )
 
         debug(
             "Groups secret variables AFTER: %s",
