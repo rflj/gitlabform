@@ -24,12 +24,21 @@ class GitLabRepositories(GitLabCore):
         )
         return base64.b64decode(result["content"]).decode("utf-8")
 
-    def set_file(self, project_and_group_name, branch, path, content, commit_message):
+    def set_file(
+        self,
+        project_and_group_name,
+        branch,
+        path,
+        content,
+        commit_message,
+        execute_filemode,
+    ):
         data = {
             "branch": branch,
             "file_path": path,
             "content": content,
             "commit_message": commit_message,
+            "execute_filemode": execute_filemode,
         }
         return self._make_requests_to_api(
             "projects/%s/repository/files/%s",
@@ -38,12 +47,21 @@ class GitLabRepositories(GitLabCore):
             data=data,
         )
 
-    def add_file(self, project_and_group_name, branch, path, content, commit_message):
+    def add_file(
+        self,
+        project_and_group_name,
+        branch,
+        path,
+        content,
+        commit_message,
+        execute_filemode,
+    ):
         data = {
             "branch": branch,
             "file_path": path,
             "content": content,
             "commit_message": commit_message,
+            "execute_filemode": execute_filemode,
         }
         return self._make_requests_to_api(
             "projects/%s/repository/files/%s",

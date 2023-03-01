@@ -5,4 +5,6 @@ COPY ../README.md /gitlabform/
 COPY ../version /gitlabform/
 COPY ../CHANGELOG.md /gitlabform/
 
+RUN apk add rust cargo libffi-dev
+
 RUN cd /gitlabform && pip install -e .[test]

@@ -108,6 +108,7 @@ def create_project(group_name, project_name):
         "README.md",
         DEFAULT_README,
         "Create README",
+        False,
     )
 
 

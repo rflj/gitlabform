@@ -227,6 +227,7 @@ class FilesProcessor(AbstractProcessor):
         file,
         operation,
         configuration,
+        execute_filemode,
         new_content=None,
     ):
         if operation == "modify":
@@ -236,6 +237,7 @@ class FilesProcessor(AbstractProcessor):
                 file,
                 new_content,
                 self.get_commit_message_for_file_change("change", file, configuration),
+                execute_filemode,
             )
         elif operation == "add":
             self.gitlab.add_file(
@@ -244,6 +246,7 @@ class FilesProcessor(AbstractProcessor):
                 file,
                 new_content,
                 self.get_commit_message_for_file_change("add", file, configuration),
+                execute_filemode,
             )
         elif operation == "delete":
             self.gitlab.delete_file(
